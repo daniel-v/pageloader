@@ -17,7 +17,7 @@
 STATUS=0
 
 # Analyze package.
-dartanalyzer .
+dart analyze .
 ANALYSIS_STATUS=$?
 if [[ $ANALYSIS_STATUS -ne 0 ]]; then
   STATUS=$ANALYSIS_STATUS

@@ -13,6 +13,7 @@
 
 import 'dart:async';
 
+import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 
@@ -35,8 +36,7 @@ class PageObjectGenerator extends GeneratorForAnnotation<PageObject> {
       Element element, ConstantReader annotation, BuildStep buildStep) async {
     final library = element.library;
     // ignore: deprecated_member_use
-    final resolvedLibrary =
-        await library.session.getResolvedLibraryByElement(library);
+    final ResolvedLibraryResult resolvedLibrary = await library.session.getResolvedLibraryByElement(library);
     final annotatedNode = resolvedLibrary.getElementDeclaration(element).node;
     final poAnnotation = getPageObjectAnnotation(annotation);
     if (annotatedNode is ClassOrMixinDeclaration) {
@@ -98,6 +98,7 @@ class PageObjectGenerator extends GeneratorForAnnotation<PageObject> {
     // If PageObject has constructor, define constructor class with root
     // and start constructor.
     if (hasPoConstructors(declaration.declaredElement)) {
+      log.info('hasPoConstructor');
       final withs = getMixins(declaration.declaredElement, signatureArgs);
       constructorBuffer.write('''
       class \$$signature extends $signatureArgs
@@ -231,7 +232,7 @@ List<String> getMixins(ClassElement mainPo, String mainSignature) {
 
   // If the direct extension is not 'Object' and is a @PageObject annotated
   // class, we add its mixin-component to the list.
-  if (supertype != null && !supertype.isObject) {
+  if (supertype != null && !supertype.isDartCoreObject) {
     if (isPageObject(supertype.element)) {
       withs.add(supertype.displayName);
     }
@@ -291,7 +292,7 @@ bool hasFactoryConstructor(ClassElement element) {
   if (constructors.isNotEmpty) {
     return constructors.any((c) =>
         c.isFactory &&
-        (c.displayName == 'create' || c.displayName == 'lookup'));
+        (c.name == 'create' || c.name == 'lookup'));
   }
   return false;
 }

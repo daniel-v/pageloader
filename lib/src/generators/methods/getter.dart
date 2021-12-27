@@ -26,7 +26,10 @@ part 'getter.g.dart';
 Optional<Getter> collectUnannotatedGetter(MethodDeclaration node) {
   if (!node.isAbstract && node.isGetter && !node.isStatic) {
     return Optional.of(Getter((b) => b
-      ..returnType = node.returnType.toString()
+      // false is needed, otherwise the name of a variable might return with NullabilitySuffix.star which is invalid
+      // outside of analysis context
+      ..returnType = node.returnType.type.getDisplayString(withNullability: false)
+      // ..returnType = 'dynamic'
       ..name = node.name.toString()));
   }
   return Optional.absent();

@@ -134,12 +134,12 @@ html.Element setUp() {
   }
   div.setInnerHtml(bodyHtml, validator: NoOpNodeValidator());
 
-  html.document.getElementsByTagName('a-custom-tag').forEach((element) {
-    if (element is html.Element) {
-      final shadow = element.createShadowRoot();
+  for(final element in html.document.getElementsByTagName('a-custom-tag')) {
+    if(element is html.Element) {
+      final shadow = element.attachShadow({'mode': 'open'});
       shadow.setInnerHtml(templateHtml, validator: NoOpNodeValidator());
     }
-  });
+  }
 
   // Get all mouseevent driven div elements and bind them
   final displayedMouseDiv = html.document.getElementById('mouse');

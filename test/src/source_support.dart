@@ -13,9 +13,10 @@
 
 import 'dart:async';
 
+import 'package:analyzer/dart/analysis/results.dart';
+import 'package:analyzer/dart/analysis/session.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
-import 'package:analyzer/dart/analysis/session.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/memory_file_system.dart';
@@ -24,7 +25,6 @@ import 'package:analyzer/src/dart/analysis/driver.dart';
 import 'package:analyzer/src/dart/analysis/file_state.dart';
 import 'package:analyzer/src/dart/analysis/performance_logger.dart';
 import 'package:analyzer/src/generated/engine.dart';
-import 'package:analyzer/src/generated/resolver.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/test_utilities/mock_sdk.dart';
 import 'package:path/path.dart' as pather;
@@ -88,8 +88,6 @@ class TestDriver {
 
   CompilationUnit get compilationUnit => _compilationUnit;
 
-  Future<TypeProvider> get typeProvider => session.typeProvider;
-
   TestDriver() {
     final byteStore = MemoryByteStore();
     final sdk = MockSdk(resourceProvider: resourceProvider);
@@ -129,7 +127,7 @@ class TestDriver {
   Future<CompilationUnit> resultForFile(String path, String contents) async {
     newSource(path, contents);
     session = driver.currentSession;
-    return (await session.getResolvedUnit(pather.join(root, path))).unit;
+    return (await session.getResolvedUnit(pather.join(root, path)) as ResolvedUnitResult).unit;
   }
 
   /// Adds a new source and contents to the driver's scope.

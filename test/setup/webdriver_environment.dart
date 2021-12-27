@@ -17,6 +17,7 @@ import 'package:pageloader/webdriver.dart';
 import 'package:webdriver/sync_io.dart';
 
 import 'io_config.dart' as webtest;
+import 'dart:math' as math;
 
 /// Simple environment management for WebDriver tests.
 class WebDriverEnvironment {
@@ -28,6 +29,7 @@ class WebDriverEnvironment {
 
   Future setUp() async {
     driver = webtest.createTestDriver();
+    driver.window.size = math.Rectangle(0, 0, 600, 480);
     _loader = WebDriverPageUtils(driver);
     driver.get(webtest.testPagePath(useLong: useLong));
   }

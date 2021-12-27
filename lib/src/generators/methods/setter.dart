@@ -27,7 +27,10 @@ Optional<Setter> collectUnannotatedSetter(MethodDeclaration node) {
     final param = node.parameters.parameters.first;
     return Optional.of(Setter((b) => b
       ..name = node.name.toString()
-      ..setterType = param.declaredElement.type.toString()
+      // false is needed, otherwise the name of a variable might return with NullabilitySuffix.star which is invalid
+      // outside of analysis context
+      ..setterType =  param.declaredElement.type.getDisplayString(withNullability: false)
+      // ..setterType = 'dynamic'
       ..setterValueName = param.declaredElement.name));
   }
   return Optional.absent();
@@ -50,8 +53,7 @@ abstract class Setter implements Built<Setter, SetterBuilder> {
             '}';
   }
 
-  String generateForMixin(String pageObjectName) =>
-      'set $name($setterType $setterValueName);';
+  String generateForMixin(String pageObjectName) => 'set $name($setterType $setterValueName);';
 
   factory Setter([Function(SetterBuilder) updates]) = _$Setter;
 
